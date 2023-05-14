@@ -1,0 +1,5 @@
+index => login
+register => open_account
+delete_account => delete_account
+balance => get_balance
+tranfer => transfer
