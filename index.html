@@ -4,19 +4,47 @@
 <head>
     <title>Bank Login</title>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script> <!-- 引入 axios 库 -->
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1,
+        #waiting-box {
+            margin: 0 auto;
+            text-align: center;
+            margin-top: 20px;
+            /* 设置标题和等待框距离表单的距离 */
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Bank Login</h1>
+    <h1>Bank Login</h1><br><br><br><br>
     <form id="login-form" onsubmit="submitForm(event)">
-        <label for="username">User Name:</label>
+        <label for="username">User Name:</label><br>
         <input type="text" id="username" name="username"><br><br>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password"><br><br>
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password"><br>
 
-        <button type="submit">Login</button>
+        <button type="submit">Login</button><br><br>
     </form>
+
+    <!-- 添加等待框 -->
+    <div id="waiting-box" style="display: none;">
+        We are checking your information. Please wait a few minutes...
+    </div>
 
     <script>
         function submitForm(e) {
@@ -24,10 +52,26 @@
 
             const form = document.getElementById("login-form");
             const formData = new FormData(form);
+            const requestBody = Object.fromEntries(formData); // 将 FormData 转换成对象
 
-            axios.post("http://10.251.12.79/login", formData) // 发送 POST 请求
+            document.getElementById("waiting-box").style.display = "block";
+
+            axios.post("http://10.251.176.190:12345/login", requestBody) // 发送 POST 请求
                 .then(function (response) {
-                    console.log(response);
+                    console.log(response.data);
+                    if (response.data.state == "success") { // 如果服务器返回数据中的 success 字段为 true，则说明登录成功
+                        document.getElementById("waiting-box").style.display = "none";
+                        localStorage.setItem("account_id", response.data.account_id);
+                        localStorage.setItem("token", response.data.token);
+                        localStorage.setItem("state", response.data.state);
+                        window.location.href = "./select.html";
+                    } else if (response.data.state == "fail") { // 否则说明登录失败
+                        document.getElementById("waiting-box").style.display = "none";
+                        alert("Login Failed!"); // 弹出错误信息
+                    } else {
+                        document.getElementById("waiting-box").style.display = "none";
+                        alert("Have already login!"); // 弹出错误信息
+                    }
                 })
                 .catch(function (error) {
                     console.log(error);

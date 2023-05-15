@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Select Service</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1,
+        #waiting-box {
+            margin: 0 auto;
+            text-align: center;
+            margin-top: 20px;
+            /* 设置标题和等待框距离表单的距离 */
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Choose your Service</h1><br><br><br><br>
+    <form id="balance-form">
+        <label for="balance">Check balance:</label><br>
+        <input type="submit" value="Submit"><br><br>
+    </form>
+
+    <form id="transfer-form">
+        <label for="transfer">Transfer funds:</label><br>
+
+        <label for="src_account_id">From (Please input your account id):</label>
+        <input type="text" id="src_account_id" name="src_account_id"><br><br>
+
+        <label for="dst_account_id">To (Please input target account id):</label>
+        <input type="text" id="dst_account_id" name="dst_account_id"><br><br>
+
+        <label for="amount">Amount:</label>
+        <input type="number" id="amount" name="amount"><br>
+
+        <input type="submit" value="Submit"><br><br>
+    </form>
+
+    <form id="create-form">
+        <label for="create">Open an account:</label><br>
+
+        <label for="username">Account Name:</label>
+        <input type="text" id="username" name="username"><br><br>
+
+        <label for="amount">Amount:</label>
+        <input type="text" id="amount" name="amount"><br>
+
+        <input type="submit" value="Submit"><br><br>
+    </form>
+
+    <form id="delete-form">
+        <label for="delete">Delete an account:</label><br>
+
+        <label for="account_id">Account ID:</label>
+        <input type="number" id="account_id" name="account_id"><br>
+
+        <input type="submit" value="Submit"><br><br>
+    </form>
+
+    <!-- 添加等待框 -->
+    <div id="waiting-box" style="display: none;">
+        We are checking your submission. Please wait a few minutes...
+    </div>
+
+    <script>
+        function submitForm(e) {
+            e.preventDefault(); // 阻止默认表单提交行为
+
+            const accountId = localStorage.getItem("account_id");
+            const token = localStorage.getItem("token");
+            const state = localStorage.getItem("state");
+
+
+            // balance
+            const balance_form = document.getElementById("balance-form");
+            const balance_formData = new FormData(form);
+            balance_formData.append("account_id", accountId);
+            const balance_requestBody = Object.fromEntries(balance_formData);
+
+            document.getElementById("waiting-box").style.display = "block";
+
+            axios.post("http://10.251.176.190/balance", balance_requestBody, {
+                headers: {
+                    "AUTHORIZATION": token
+                }
+            }) // 发送 POST 请求
+                .then(function (response) {
+                    console.log(response.data);
+                    if (response.data.state == "success") {
+                        document.getElementById("waiting-box").style.display = "none";
+                        localStorage.setItem("state", response.data.state);
+                        alert("Your balance is: " + response.data.balance);
+                    }
+                    else {
+                        alert("Get balance failed!");
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+
+            // transfer balance
+            const transfer_from = document.getElementById("transfer-form");
+            const transfer_formData = new FormData(transfer_from);
+            const transfer_requestBody = Object.fromEntries(transfer_formData);
+
+            document.getElementById("waiting-box").style.display = "block";
+
+            axios.post("http://10.251.176.190/transfer", transfer_requestBody, {
+                headers: {
+                    "AUTHORIZATION": token
+                }
+            }) // 发送 POST 请求
+                .then(function (response) {
+                    console.log(response.data);
+                    if (response.data.state == "success") {
+                        document.getElementById("waiting-box").style.display = "none";
+                        localStorage.setItem("state", response.data.state);
+                        alert("Balance transfer success!");
+                    } else {
+                        alert("Balance transfer failed!");
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+
+            // open account
+            const create_from = document.getElementById("create-form");
+            const create_formData = new FormData(create_from);
+            const create_requestBody = Object.fromEntries(create_formData);
+
+            document.getElementById("waiting-box").style.display = "block";
+
+            axios.post("http://10.251.176.190/open_account", create_requestBody, {
+                headers: {
+                    "AUTHORIZATION": token
+                }
+            }) // 发送 POST 请求
+                .then(function (response) {
+                    console.log(response.data);
+                    if (response.data.state == "success") {
+                        document.getElementById("waiting-box").style.display = "none";
+                        localStorage.setItem("state", response.data.state);
+                        alert("Create account success!\nNew account id: " + response.data.account_id + "\nNew account password: " + response.data.password);
+                    } else {
+                        alert("Create account failed!");
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+
+            // delete account
+            const delete_form = document.getElementById("delete-form");
+            const delete_formData = new FormData(delete_form);
+            const delete_requestBody = Object.fromEntries(delete_formData);
+
+            document.getElementById("waiting-box").style.display = "block";
+
+            axios.post("http://10.251.176.190/delete_account", create_requestBody, {
+                headers: {
+                    "AUTHORIZATION": token
+                }
+            }) // 发送 POST 请求
+                .then(function (response) {
+                    console.log(response.data);
+                    if (response.data.state == "success") {
+                        document.getElementById("waiting-box").style.display = "none";
+                        localStorage.setItem("state", response.data.state);
+                        alert("Delete account success!");
+                    } else {
+                        alert("Delete account failed!");
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+
+        }
+    </script>
+</body>
+
+</html>
