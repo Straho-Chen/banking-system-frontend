@@ -82,14 +82,14 @@
     </div>
 
     <script>
-        const accountId = localStorage.getItem("account_id");
-        const token = localStorage.getItem("token");
-        const state = localStorage.getItem("state");
         const domain = "http://10.251.176.190:12345"
 
         const balance_form = document.getElementById("balance-form");
         balance_form.addEventListener("submit", function (e) {
             e.preventDefault(); // 阻止默认表单提交行为
+            const accountId = localStorage.getItem("account_id");
+            const token = localStorage.getItem("token");
+            const state = localStorage.getItem("state");
             // balance
             const data = {
                 account_id: parseInt(accountId, 10),
@@ -122,6 +122,9 @@
         const transfer_form = document.getElementById("transfer-form");
         transfer_form.addEventListener("submit", function (e) {
             e.preventDefault();
+            const accountId = localStorage.getItem("account_id");
+            const token = localStorage.getItem("token");
+            const state = localStorage.getItem("state");
             // transfer balance
             const transfer_formData = new FormData(transfer_form);
             const data = {
@@ -156,6 +159,9 @@
         const create_form = document.getElementById("create-form");
         create_form.addEventListener("submit", function (e) {
             e.preventDefault();
+            const accountId = localStorage.getItem("account_id");
+            const token = localStorage.getItem("token");
+            const state = localStorage.getItem("state");
             // open account
             const create_formData = new FormData(create_form);
             const data = {
@@ -189,6 +195,9 @@
         const delete_form = document.getElementById("delete-form");
         delete_form.addEventListener("submit", function (e) {
             e.preventDefault();
+            const accountId = localStorage.getItem("account_id");
+            const token = localStorage.getItem("token");
+            const state = localStorage.getItem("state");
             // delete account
             const delete_formData = new FormData(delete_form);
             const data = {
@@ -221,6 +230,9 @@
         const back_form = document.getElementById("back-form");
         back_form.addEventListener("submit", function (e) {
             e.preventDefault();
+            const accountId = localStorage.getItem("account_id");
+            const token = localStorage.getItem("token");
+            const state = localStorage.getItem("state");
             localStorage.removeItem("account_id");
             localStorage.removeItem("token");
             localStorage.removeItem("state");
