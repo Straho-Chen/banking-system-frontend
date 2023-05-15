@@ -47,6 +47,7 @@
     </div>
 
     <script>
+        const domain = "http://10.251.176.190:12345"
         function submitForm(e) {
             e.preventDefault(); // 阻止默认表单提交行为
 
@@ -56,7 +57,7 @@
 
             document.getElementById("waiting-box").style.display = "block";
 
-            axios.post("http://10.251.176.190:12345/login", requestBody) // 发送 POST 请求
+            axios.post(domain + "/login", requestBody) // 发送 POST 请求
                 .then(function (response) {
                     console.log(response.data);
                     if (response.data.state == "success") { // 如果服务器返回数据中的 success 字段为 true，则说明登录成功

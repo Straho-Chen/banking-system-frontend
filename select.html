@@ -3,6 +3,7 @@
 
 <head>
     <title>Select Service</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script> <!-- 引入 axios 库 -->
     <style>
         body {
             display: flex;
@@ -39,10 +40,10 @@
         <label for="transfer">Transfer funds:</label><br>
 
         <label for="src_account_id">From (Please input your account id):</label>
-        <input type="text" id="src_account_id" name="src_account_id"><br><br>
+        <input type="number" id="src_account_id" name="src_account_id"><br><br>
 
         <label for="dst_account_id">To (Please input target account id):</label>
-        <input type="text" id="dst_account_id" name="dst_account_id"><br><br>
+        <input type="number" id="dst_account_id" name="dst_account_id"><br><br>
 
         <label for="amount">Amount:</label>
         <input type="number" id="amount" name="amount"><br>
@@ -57,7 +58,7 @@
         <input type="text" id="username" name="username"><br><br>
 
         <label for="amount">Amount:</label>
-        <input type="text" id="amount" name="amount"><br>
+        <input type="number" id="amount" name="amount"><br>
 
         <input type="submit" value="Submit"><br><br>
     </form>
@@ -77,24 +78,24 @@
     </div>
 
     <script>
-        function submitForm(e) {
+        const accountId = localStorage.getItem("account_id");
+        const token = localStorage.getItem("token");
+        const state = localStorage.getItem("state");
+        const domain = "http://10.251.176.190:12345"
+
+        const balance_form = document.getElementById("balance-form");
+        balance_form.addEventListener("submit", function (e) {
             e.preventDefault(); // 阻止默认表单提交行为
-
-            const accountId = localStorage.getItem("account_id");
-            const token = localStorage.getItem("token");
-            const state = localStorage.getItem("state");
-
-
             // balance
-            const balance_form = document.getElementById("balance-form");
-            const balance_formData = new FormData(form);
-            balance_formData.append("account_id", accountId);
-            const balance_requestBody = Object.fromEntries(balance_formData);
+            const data = {
+                account_id: parseInt(accountId, 10),
+            };
 
             document.getElementById("waiting-box").style.display = "block";
 
-            axios.post("http://10.251.176.190/balance", balance_requestBody, {
+            axios.post(domain + "/balance", data, {
                 headers: {
+                    'Content-Type': 'application/json',
                     "AUTHORIZATION": token
                 }
             }) // 发送 POST 请求
@@ -112,16 +113,24 @@
                 .catch(function (error) {
                     console.log(error);
                 });
+        });
 
+        const transfer_form = document.getElementById("transfer-form");
+        transfer_form.addEventListener("submit", function (e) {
+            e.preventDefault();
             // transfer balance
-            const transfer_from = document.getElementById("transfer-form");
-            const transfer_formData = new FormData(transfer_from);
-            const transfer_requestBody = Object.fromEntries(transfer_formData);
+            const transfer_formData = new FormData(transfer_form);
+            const data = {
+                src_account_id: parseInt(transfer_formData.get("src_account_id"), 10),
+                dst_account_id: parseInt(transfer_formData.get("dst_account_id"), 10),
+                amount: parseInt(transfer_formData.get("amount"), 10),
+            };
 
             document.getElementById("waiting-box").style.display = "block";
 
-            axios.post("http://10.251.176.190/transfer", transfer_requestBody, {
+            axios.post(domain + "/transfer", data, {
                 headers: {
+                    'Content-Type': 'application/json',
                     "AUTHORIZATION": token
                 }
             }) // 发送 POST 请求
@@ -138,16 +147,23 @@
                 .catch(function (error) {
                     console.log(error);
                 });
+        });
 
+        const create_form = document.getElementById("create-form");
+        create_form.addEventListener("submit", function (e) {
+            e.preventDefault();
             // open account
-            const create_from = document.getElementById("create-form");
-            const create_formData = new FormData(create_from);
-            const create_requestBody = Object.fromEntries(create_formData);
+            const create_formData = new FormData(create_form);
+            const data = {
+                username: create_formData.get("username"),
+                amount: parseInt(create_formData.get("amount"), 10),
+            };
 
             document.getElementById("waiting-box").style.display = "block";
 
-            axios.post("http://10.251.176.190/open_account", create_requestBody, {
+            axios.post(domain + "/open_account", data, {
                 headers: {
+                    'Content-Type': 'application/json',
                     "AUTHORIZATION": token
                 }
             }) // 发送 POST 请求
@@ -164,16 +180,22 @@
                 .catch(function (error) {
                     console.log(error);
                 });
+        });
 
+        const delete_form = document.getElementById("delete-form");
+        delete_form.addEventListener("submit", function (e) {
+            e.preventDefault();
             // delete account
-            const delete_form = document.getElementById("delete-form");
             const delete_formData = new FormData(delete_form);
-            const delete_requestBody = Object.fromEntries(delete_formData);
+            const data = {
+                account_id: parseInt(delete_formData.get("account_id"), 10),
+            };
 
             document.getElementById("waiting-box").style.display = "block";
 
-            axios.post("http://10.251.176.190/delete_account", create_requestBody, {
+            axios.post(domain + "/delete_account", data, {
                 headers: {
+                    'Content-Type': 'application/json',
                     "AUTHORIZATION": token
                 }
             }) // 发送 POST 请求
@@ -190,8 +212,7 @@
                 .catch(function (error) {
                     console.log(error);
                 });
-
-        }
+        });
     </script>
 </body>
 
